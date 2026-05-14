@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createServiceClient } from '@/lib/supabase/server'
-import { stripe, FORMULE_PRICES } from '@/lib/stripe'
+import { getStripe, FORMULE_PRICES } from '@/lib/stripe'
 import { sendArtisanWelcomeEmail } from '@/lib/emails'
 
 const schema = z.object({
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Créer le client Stripe
-    const customer = await stripe.customers.create({
+    const customer = await getStripe().customers.create({
       email: data.email,
       name: `${data.prenom} ${data.nom}`,
       metadata: {
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     if (error || !artisan) {
       // Rollback Stripe customer
-      await stripe.customers.del(customer.id).catch(() => {})
+      await getStripe().customers.del(customer.id).catch(() => {})
       console.error('[Artisan inscription] DB error:', error)
       return NextResponse.json({ error: 'Erreur lors de la création du compte' }, { status: 500 })
     }
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     const priceConfig = FORMULE_PRICES[data.formule]
     const appUrl = process.env.NEXT_PUBLIC_APP_URL
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       customer: customer.id,
       payment_method_types: ['card'],
       line_items: [

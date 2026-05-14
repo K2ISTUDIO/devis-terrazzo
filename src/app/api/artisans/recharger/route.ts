@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
-import { stripe, FORMULE_PRICES } from '@/lib/stripe'
+import { getStripe, FORMULE_PRICES } from '@/lib/stripe'
 import { cookies } from 'next/headers'
 
 async function getArtisan() {
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     const priceConfig = FORMULE_PRICES[artisan.formule as keyof typeof FORMULE_PRICES]
     const appUrl = process.env.NEXT_PUBLIC_APP_URL
 
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripe().checkout.sessions.create({
       customer: artisan.stripe_customer_id || undefined,
       customer_email: !artisan.stripe_customer_id ? artisan.email : undefined,
       payment_method_types: ['card'],

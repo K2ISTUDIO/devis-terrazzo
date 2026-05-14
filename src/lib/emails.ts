@@ -1,4 +1,4 @@
-import { resend, FROM } from './resend'
+import { getResend, FROM } from './resend'
 import type { Lead, Artisan } from './types'
 import { BUDGET_LABELS, DELAI_LABELS, PIECE_LABELS, formatDate } from './utils'
 
@@ -8,7 +8,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://devis-terrazzo.fr'
 // Email prospect : confirmation de demande
 // ============================================================
 export async function sendLeadConfirmationToProspect(lead: Lead) {
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: FROM,
     to: lead.email,
     subject: 'Votre demande de devis terrazzo a bien été reçue',
@@ -26,7 +26,7 @@ export async function sendLeadConfirmationToProspect(lead: Lead) {
 // ============================================================
 export async function sendLeadToArtisan(artisan: Artisan, lead: Lead) {
   const subject = `Nouveau lead terrazzo — ${lead.ville} — ${lead.surface} m²`
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: FROM,
     to: artisan.email,
     subject,
@@ -43,7 +43,7 @@ export async function sendLeadToArtisan(artisan: Artisan, lead: Lead) {
 // Email artisan : alerte solde faible
 // ============================================================
 export async function sendLowBalanceAlert(artisan: Artisan, solde: number) {
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: FROM,
     to: artisan.email,
     subject: `⚠️ Votre solde de leads est faible (${solde} restant${solde > 1 ? 's' : ''})`,
@@ -59,7 +59,7 @@ export async function sendLowBalanceAlert(artisan: Artisan, solde: number) {
 // Email artisan : bienvenue à l'inscription
 // ============================================================
 export async function sendArtisanWelcomeEmail(artisan: Artisan) {
-  const { error } = await resend.emails.send({
+  const { error } = await getResend().emails.send({
     from: FROM,
     to: artisan.email,
     subject: 'Bienvenue sur DevisTerrazzo — Votre compte artisan',
