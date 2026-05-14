@@ -203,11 +203,13 @@ async function logError(
   action: string,
   message: string
 ) {
-  await supabase.from('distribution_logs').insert({
-    lead_id: leadId,
-    artisan_id: artisanId,
-    action,
-    success: false,
-    error_message: message,
-  }).catch(() => {})
+  try {
+    await supabase.from('distribution_logs').insert({
+      lead_id: leadId,
+      artisan_id: artisanId,
+      action,
+      success: false,
+      error_message: message,
+    })
+  } catch {}
 }
