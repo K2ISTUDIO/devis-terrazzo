@@ -141,8 +141,3 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ received: true })
 }
-
-// Désactiver le body parsing automatique de Next.js pour lire le body brut
-export const config = {
-  api: { bodyParser: false },
-}
